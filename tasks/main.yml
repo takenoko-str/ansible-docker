@@ -1,0 +1,83 @@
+---
+- name: Add apt_key ID
+  apt_key:
+    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+
+- name: Add an entry for your Ubuntu operationg system
+  apt_repository:
+    repo: "deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install the recommended kernel package, linux-image-extra-*
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - linux-image-extra-{{ ansible_kernel }}
+    - linux-image-extra-virtual
+
+- name: Install docker-engine
+  apt:
+    pkg: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - docker-engine
+    - golang
+  notify: restart-docker
+
+- name: Install docker-compose
+  pip:
+    name: docker-compose
+
+- block:
+  - name: Set docker.service.d
+    file:
+      path: /etc/systemd/system/docker.service.d
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Set http-proxy.conf for docker registory.(xenial)
+    template:
+      src: http-proxy.conf.j2
+      dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify: systemd-daemon-reload
+  when: ansible_distribution_release == "xenial" and proxy is none
+
+- name: add docker group
+  user:
+    name: "{{ app_user }}"
+    groups: adm,docker
+    shell: /bin/bash
+    state: present
+
+- name: set authorized_keys
+  authorized_key:
+    user: "{{ app_user }}"
+    key: "{{ item }}"
+    state: present
+  with_file:
+    - files/developer
+    - files/idcf
+    - files/developer_idcf
+
+- block:
+  - name: Set proxy for docker registory.(trusty)
+    lineinfile:
+      dest: /etc/default/docker
+      backrefs: yes
+      regexp: '^#export\s+http_proxy=.*'
+      line: "export http_proxy=\"{{ proxy }}\""
+    notify: restart-docker
+  when:
+    - ansible_distribution_release == "trusty" and proxy is none
+

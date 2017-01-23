@@ -1,0 +1,3 @@
+no_porxy: localhost,127.0.0.1,docker-registry.somecorporation.com
+app_user: developer
+
