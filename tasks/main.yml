@@ -60,15 +60,13 @@
     shell: /bin/bash
     state: present
 
-- name: set authorized_keys
-  authorized_key:
-    user: "{{ app_user }}"
-    key: "{{ item }}"
-    state: present
-  with_file:
-    - files/developer
-    - files/idcf
-    - files/developer_idcf
+#- name: set authorized_keys
+#  authorized_key:
+#    user: "{{ app_user }}"
+#    key: "{{ item }}"
+#    state: present
+#  with_file:
+#    - "public_keys/{{ app_user }}"
 
 - block:
   - name: Set proxy for docker registory.(trusty)
