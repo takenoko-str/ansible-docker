@@ -1,7 +1,8 @@
 ---
 - name: Add apt_key ID
   apt_key:
-    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    #keyserver: hkp://p80.pool.sks-keyservers.net:80
+    keyserver: https://yum.dockerproject.org/gpg
     id: 58118E89F3A912897C070ADBF76221572C52609D
 
 - name: Add an entry for your Ubuntu operationg system
@@ -15,6 +16,7 @@
     state: present
     update_cache: yes
   with_items:
+    - curl
     - apt-transport-https
     - ca-certificates
     - linux-image-extra-{{ ansible_kernel }}
@@ -53,7 +55,7 @@
     notify: systemd-daemon-reload
   when: ansible_distribution_release == "xenial" and proxy is none
 
-- name: add docker group
+- name: add {{ app_user }} to docker group
   user:
     name: "{{ app_user }}"
     groups: adm,docker
