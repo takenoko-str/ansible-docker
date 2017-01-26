@@ -19,7 +19,6 @@ install:
   - printf '[defaults]\nroles_path=../' >ansible.cfg
 
   # Install role dependencies
-  # ...
 
 script:
   # Basic role syntax check
