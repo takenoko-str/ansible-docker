@@ -1,7 +1,6 @@
 ---
 - name: Add apt_key ID
   apt_key:
-    #keyserver: hkp://p80.pool.sks-keyservers.net:80
     keyserver: https://yum.dockerproject.org/gpg
     id: 58118E89F3A912897C070ADBF76221572C52609D
 
