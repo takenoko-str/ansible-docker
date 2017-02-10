@@ -68,7 +68,7 @@
       backrefs: yes
       regexp: '^#export\s+http_proxy=.*'
       line: "export http_proxy=\"{{ proxy }}\""
-    notify: restart-docker
+    notify: restart-service-docker
   when:
     - ansible_distribution_release == "trusty"
 
