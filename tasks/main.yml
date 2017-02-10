@@ -52,7 +52,7 @@
       group: root
       mode: 0644
     notify: systemd-daemon-reload
-  when: ansible_distribution_release == "xenial" and proxy is none
+  when: ansible_distribution_release == "xenial"
 
 - name: add {{ app_user }} to docker group
   user:
@@ -70,5 +70,5 @@
       line: "export http_proxy=\"{{ proxy }}\""
     notify: restart-docker
   when:
-    - ansible_distribution_release == "trusty" and proxy is none
+    - ansible_distribution_release == "trusty"
 
