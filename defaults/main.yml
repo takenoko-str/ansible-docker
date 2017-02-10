@@ -1,3 +1,4 @@
-no_porxy: localhost,127.0.0.1,docker-registry.somecorporation.com
+proxy: http://proxy:3128
+no_porxy: localhost,127.0.0.1
 app_user: developer
 
