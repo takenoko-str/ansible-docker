@@ -29,7 +29,7 @@
   with_items:
     - docker-engine
     - golang
-  notify: restart-docker
+  notify: restart-service-docker
 
 - name: Install docker-compose
   pip:
