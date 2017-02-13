@@ -1,4 +1,4 @@
 proxy: http://proxy:3128
-no_porxy: localhost,127.0.0.1
+no_proxy: localhost,127.0.0.1
 app_user: developer
 docker_opts: -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
