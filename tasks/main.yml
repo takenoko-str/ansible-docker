@@ -8,6 +8,8 @@
   apt_repository:
     repo: "deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main"
     state: present
+    filename: docker.list
+    update_cache: yes
 
 - name: Install the recommended kernel package, linux-image-extra-*
   apt:
@@ -33,42 +35,44 @@
 
 - name: Install docker-compose
   pip:
-    name: docker-compose
+    name: "{{ item }}"
+  with_items:
+    - docker-compose
+    - docker-py
 
-- block:
-  - name: Set docker.service.d
-    file:
-      path: /etc/systemd/system/docker.service.d
-      state: directory
-      owner: root
-      group: root
-      mode: 0755
+- name: Set docker.service.d
+  file:
+    path: /lib/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+    - xenial
 
-  - name: Set http-proxy.conf for docker registory.(xenial)
-    template:
-      src: http-proxy.conf.j2
-      dest: /etc/systemd/system/docker.service.d/http-proxy.conf
-      owner: root
-      group: root
-      mode: 0644
-    notify: systemd-daemon-reload
-  when: ansible_distribution_release == "xenial"
+- name: Set http-proxy.conf for docker registory.(xenial)
+  template:
+    src: http-proxy.conf.j2
+    dest: /lib/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: systemd-daemon-reload
+  tags:
+    - xenial
 
-- name: add {{ app_user }} to docker group
+- name: "add {{ app_user }} to docker group"
   user:
     name: "{{ app_user }}"
     groups: adm,docker
     shell: /bin/bash
     state: present
 
-- block:
-  - name: Set proxy for docker registory.(trusty)
-    lineinfile:
-      dest: /etc/default/docker
-      backrefs: yes
-      regexp: '^#export\s+http_proxy=.*'
-      line: "export http_proxy=\"{{ proxy }}\""
-    notify: restart-service-docker
-  when:
-    - ansible_distribution_release == "trusty"
+- name: Set proxy for docker registory.(trusty)
+  lineinfile:
+    dest: /etc/default/docker
+    backrefs: yes
+    regexp: '^#export\s+http_proxy=.*'
+    line: "export http_proxy=\"{{ proxy }}\""
+  notify: restart-service-docker
 
