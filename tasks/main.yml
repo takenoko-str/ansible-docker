@@ -40,6 +40,13 @@
     - docker-compose
     - docker-py
 
+- name: "add {{ app_user }} to docker group"
+  user:
+    name: "{{ app_user }}"
+    groups: adm,docker
+    shell: /bin/bash
+    state: present
+
 - name: Set docker.service.d
   file:
     path: /lib/systemd/system/docker.service.d
@@ -59,13 +66,6 @@
   notify: systemd-daemon-reload
   tags: xenial
 
-- name: "add {{ app_user }} to docker group"
-  user:
-    name: "{{ app_user }}"
-    groups: adm,docker
-    shell: /bin/bash
-    state: present
-
 - name: Set proxy for docker registory.(trusty)
   lineinfile:
     dest: /etc/default/docker
@@ -74,3 +74,4 @@
     line: "export http_proxy=\"{{ proxy }}\""
   notify: restart-service-docker
 
+- meta: flush_handlers
