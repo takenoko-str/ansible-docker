@@ -10,5 +10,4 @@
 
 - name: systemd-daemon-reload
   shell: systemctl daemon-reload
-  notify: restart-systemd-docker
 
