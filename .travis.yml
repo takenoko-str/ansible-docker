@@ -1,12 +1,8 @@
 ---
 sudo: required
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-    - os: linux
-      dist: xenial
-      
+env:
+  matrix:
+    - OS=ubuntu DIST=xenial
 
 language: generic
 
