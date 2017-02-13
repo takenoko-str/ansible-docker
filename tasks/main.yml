@@ -6,7 +6,7 @@
 
 - name: Add an entry for your Ubuntu operationg system
   apt_repository:
-    repo: "deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main"
+    repo: "deb https://yum.dockerproject.org/repo {{ ansible_distribution | lower }}-{{ ansible_distribution_release }} main"
     state: present
     filename: docker.list
     update_cache: yes
@@ -47,8 +47,7 @@
     owner: root
     group: root
     mode: 0755
-  tags:
-    - xenial
+  tags: xenial
 
 - name: Set http-proxy.conf for docker registory.(xenial)
   template:
@@ -58,8 +57,7 @@
     group: root
     mode: 0644
   notify: systemd-daemon-reload
-  tags:
-    - xenial
+  tags: xenial
 
 - name: "add {{ app_user }} to docker group"
   user:
