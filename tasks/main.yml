@@ -58,10 +58,30 @@
     mode: 0755
   tags: xenial
 
+- name: Set docker.service for systemd
+  template:
+    src: docker.j2
+    dest: /etc/default/docker
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart-service-docker
+  tags: xenial
+
 - name: set docker.service
   copy:
     src: docker.service
     dest: /lib/systemd/system/docker.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart-systemd-docker
+  tags: xenial
+
+- name: set docker.service
+  copy:
+    src: docker-opts.conf
+    dest: /lib/systemd/system/docker.service.d/docker-opts.conf
     owner: root
     group: root
     mode: 0644
@@ -79,14 +99,4 @@
   tags: xenial
 
 - meta: flush_handlers
-
-- name: Set docker.service for systemd
-  template:
-    src: docker.j2
-    dest: /etc/default/docker
-    owner: root
-    group: root
-    mode: 0644
-  notify: restart-service-docker
-  tags: xenial
 
