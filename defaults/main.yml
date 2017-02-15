@@ -1,5 +1,5 @@
 proxy: http://proxy:3128
 no_proxy: localhost,127.0.0.1
 app_user: developer
-docker_opts: -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --dns 10.30.100.11 --dns 10.30.100.12
+docker_opts: -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --dns 8.8.8.8 --dns 8.8.4.4 --graph /data/docker --storage-driver=overlay
 dockerd_command: /usr/bin/dockerd
