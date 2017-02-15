@@ -1,12 +1,13 @@
 ---
 - name: Add apt_key ID
   apt_key:
-    keyserver: https://yum.dockerproject.org/gpg
+    url: https://apt.dockerproject.org/gpg
     id: 58118E89F3A912897C070ADBF76221572C52609D
+    state: present
 
 - name: Add an entry for your Ubuntu operationg system
   apt_repository:
-    repo: "deb https://yum.dockerproject.org/repo {{ ansible_distribution | lower }}-{{ ansible_distribution_release }} main"
+    repo: "deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main"
     state: present
     filename: docker.list
     update_cache: yes
@@ -31,7 +32,8 @@
   with_items:
     - docker-engine
     - golang
-  notify: restart-service-docker
+    - python-dev
+    - python-pip
 
 - name: Install docker-compose
   pip:
@@ -56,6 +58,16 @@
     mode: 0755
   tags: xenial
 
+- name: set docker.service
+  copy:
+    src: docker.service
+    dest: /lib/systemd/system/docker.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: systemd-daemon-reload
+  tags: xenial
+
 - name: Set http-proxy.conf for docker registory.(xenial)
   template:
     src: http-proxy.conf.j2
@@ -66,12 +78,15 @@
   notify: systemd-daemon-reload
   tags: xenial
 
-- name: Set proxy for docker registory.(trusty)
-  lineinfile:
-    dest: /etc/default/docker
-    backrefs: yes
-    regexp: '^#export\s+http_proxy=.*'
-    line: "export http_proxy=\"{{ proxy }}\""
-  notify: restart-service-docker
-
 - meta: flush_handlers
+
+- name: Set docker.service for systemd
+  template:
+    src: docker.j2
+    dest: /etc/default/docker
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart-service-docker
+  tags: xenial
+
