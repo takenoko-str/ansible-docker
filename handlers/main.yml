@@ -1,13 +1,12 @@
 ---
 - name: restart-systemd-docker
-  shell: systemctl restart docker
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
 
 - name: restart-service-docker
   service:
     name: docker
     state: restarted
     enabled: yes
-
-- name: systemd-daemon-reload
-  shell: systemctl daemon-reload
-

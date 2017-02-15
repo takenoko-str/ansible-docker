@@ -65,7 +65,7 @@
     owner: root
     group: root
     mode: 0644
-  notify: systemd-daemon-reload
+  notify: restart-systemd-docker
   tags: xenial
 
 - name: Set http-proxy.conf for docker registory.(xenial)
@@ -75,7 +75,7 @@
     owner: root
     group: root
     mode: 0644
-  notify: systemd-daemon-reload
+  notify: restart-systemd-docker
   tags: xenial
 
 - meta: flush_handlers
